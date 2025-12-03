@@ -137,8 +137,38 @@ function renderResult(decision) {
       </ul>
     </div>
 
+    <!-- 소셜 공유 -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+      <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">
+        <i class="fas fa-share-alt mr-2 text-blue-600"></i>
+        결과 공유하기
+      </h3>
+      <div class="flex gap-3 justify-center flex-wrap">
+        <button onclick="shareToKakao(${decision.id}, '${decision.item_name.replace(/'/g, "\\'")}', '${decision.conclusion}', ${decision.price})" 
+                class="px-6 py-3 bg-yellow-400 text-gray-800 rounded-lg hover:bg-yellow-500 transition shadow-md">
+          <i class="fas fa-comment mr-2"></i>
+          카카오톡
+        </button>
+        <button onclick="shareToTwitter('${decision.item_name.replace(/'/g, "\\'")}', '${decision.conclusion}', ${decision.price})" 
+                class="px-6 py-3 bg-blue-400 text-white rounded-lg hover:bg-blue-500 transition shadow-md">
+          <i class="fab fa-twitter mr-2"></i>
+          트위터
+        </button>
+        <button onclick="shareToFacebook()" 
+                class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md">
+          <i class="fab fa-facebook mr-2"></i>
+          페이스북
+        </button>
+        <button onclick="copyLink()" 
+                class="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition shadow-md">
+          <i class="fas fa-link mr-2"></i>
+          링크 복사
+        </button>
+      </div>
+    </div>
+
     <!-- 액션 버튼 -->
-    <div class="flex gap-4 justify-center">
+    <div class="flex gap-4 justify-center flex-wrap">
       <a href="/" class="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
         <i class="fas fa-home mr-2"></i>
         대시보드
@@ -213,6 +243,59 @@ async function deleteDecision(id) {
   } catch (error) {
     console.error('Error deleting decision:', error)
     alert('삭제에 실패했습니다')
+  }
+}
+
+// 소셜 공유 함수들
+
+// 카카오톡 공유
+function shareToKakao(id, itemName, conclusion, price) {
+  const url = window.location.origin + '/result/' + id
+  const emoji = conclusion === '구매 OK' ? '✅' : conclusion === '48시간 보류' ? '⏳' : '❌'
+  const text = `${emoji} ${itemName}\n₩${formatPrice(price)}\n\n결론: ${conclusion}`
+  
+  // 카카오톡 공유는 Kakao SDK가 필요하므로, 간단히 텍스트 복사로 대체
+  copyToClipboard(`${text}\n\n${url}`)
+  alert('카카오톡에 공유할 내용이 복사되었습니다!\n카카오톡 채팅방에 붙여넣기 해주세요.')
+}
+
+// 트위터 공유
+function shareToTwitter(itemName, conclusion, price) {
+  const url = window.location.href
+  const emoji = conclusion === '구매 OK' ? '✅' : conclusion === '48시간 보류' ? '⏳' : '❌'
+  const text = `${emoji} ${itemName} (₩${formatPrice(price)})\n결론: ${conclusion}\n\n#ShouldIBuy #소비판단 #합리적소비`
+  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`
+  window.open(twitterUrl, '_blank', 'width=550,height=420')
+}
+
+// 페이스북 공유
+function shareToFacebook() {
+  const url = window.location.href
+  const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`
+  window.open(facebookUrl, '_blank', 'width=550,height=420')
+}
+
+// 링크 복사
+function copyLink() {
+  const url = window.location.href
+  copyToClipboard(url)
+  alert('링크가 복사되었습니다!\n원하는 곳에 붙여넣기 해주세요.')
+}
+
+// 클립보드 복사 헬퍼 함수
+function copyToClipboard(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text)
+  } else {
+    // 폴백: textarea 사용
+    const textarea = document.createElement('textarea')
+    textarea.value = text
+    textarea.style.position = 'fixed'
+    textarea.style.opacity = '0'
+    document.body.appendChild(textarea)
+    textarea.select()
+    document.execCommand('copy')
+    document.body.removeChild(textarea)
   }
 }
 

@@ -185,6 +185,101 @@ app.delete('/api/decisions/:id', async (c) => {
   }
 })
 
+/**
+ * GET /api/statistics
+ * 통계 데이터 조회
+ */
+app.get('/api/statistics', async (c) => {
+  try {
+    const { env } = c
+
+    // 1. 전체 요약 통계
+    const summary = await env.DB.prepare(`
+      SELECT 
+        COUNT(*) as total_decisions,
+        SUM(CASE WHEN conclusion = '구매 OK' THEN 1 ELSE 0 END) as purchased,
+        SUM(CASE WHEN conclusion = '48시간 보류' THEN 1 ELSE 0 END) as pending,
+        SUM(CASE WHEN conclusion = '구매 비추천' THEN 1 ELSE 0 END) as rejected,
+        SUM(price) as total_amount,
+        SUM(CASE WHEN conclusion != '구매 OK' THEN price ELSE 0 END) as saved_amount
+      FROM purchase_decisions
+    `).first()
+
+    // 2. 카테고리별 통계
+    const byCategory = await env.DB.prepare(`
+      SELECT 
+        category,
+        COUNT(*) as count,
+        SUM(price) as total_amount,
+        AVG(total_score) as avg_score
+      FROM purchase_decisions
+      GROUP BY category
+      ORDER BY count DESC
+    `).all()
+
+    // 3. 월별 통계
+    const byMonth = await env.DB.prepare(`
+      SELECT 
+        strftime('%Y-%m', created_at) as month,
+        COUNT(*) as count,
+        SUM(CASE WHEN conclusion = '구매 OK' THEN 1 ELSE 0 END) as purchased,
+        SUM(CASE WHEN conclusion = '48시간 보류' THEN 1 ELSE 0 END) as pending,
+        SUM(CASE WHEN conclusion = '구매 비추천' THEN 1 ELSE 0 END) as rejected,
+        SUM(price) as total_amount,
+        SUM(CASE WHEN conclusion != '구매 OK' THEN price ELSE 0 END) as saved_amount
+      FROM purchase_decisions
+      GROUP BY strftime('%Y-%m', created_at)
+      ORDER BY month DESC
+      LIMIT 12
+    `).all()
+
+    // 4. 최근 트렌드
+    const last7Days = await env.DB.prepare(`
+      SELECT COUNT(*) as count
+      FROM purchase_decisions
+      WHERE created_at >= datetime('now', '-7 days')
+    `).first()
+
+    const last30Days = await env.DB.prepare(`
+      SELECT COUNT(*) as count
+      FROM purchase_decisions
+      WHERE created_at >= datetime('now', '-30 days')
+    `).first()
+
+    const statistics = {
+      summary: summary || {
+        total_decisions: 0,
+        purchased: 0,
+        pending: 0,
+        rejected: 0,
+        total_amount: 0,
+        saved_amount: 0
+      },
+      by_category: byCategory.results || [],
+      by_month: byMonth.results || [],
+      recent_trends: {
+        last_7_days: last7Days?.count || 0,
+        last_30_days: last30Days?.count || 0,
+        avg_decision_time: 0
+      }
+    }
+
+    const response: ApiResponse<typeof statistics> = {
+      success: true,
+      data: statistics
+    }
+
+    return c.json(response)
+  } catch (error) {
+    console.error('Error fetching statistics:', error)
+    const response: ApiResponse<null> = {
+      success: false,
+      error: '통계 데이터를 불러오는데 실패했습니다.'
+    }
+    return c.json(response, 500)
+  }
+})
+
 // =====================
 // Frontend Routes (HTML)
 // =====================
@@ -216,11 +311,15 @@ app.get('/', (c) => {
                 <p class="text-gray-600">10초 안에 결론 내주는 소비 판단기</p>
             </header>
 
-            <!-- 새 판단 버튼 -->
-            <div class="text-center mb-8">
+            <!-- 버튼들 -->
+            <div class="text-center mb-8 flex gap-4 justify-center flex-wrap">
                 <a href="/new" class="inline-flex items-center px-8 py-4 bg-purple-600 text-white rounded-full shadow-lg hover:bg-purple-700 transform hover:scale-105 transition duration-200">
                     <i class="fas fa-plus-circle mr-2"></i>
                     새 소비 판단하기
+                </a>
+                <a href="/stats" class="inline-flex items-center px-8 py-4 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transform hover:scale-105 transition duration-200">
+                    <i class="fas fa-chart-bar mr-2"></i>
+                    통계 보기
                 </a>
             </div>
 
@@ -373,6 +472,53 @@ app.get('/result/:id', (c) => {
 
         <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
         <script src="/static/result.js"></script>
+    </body>
+    </html>
+  `)
+})
+
+/**
+ * GET /stats
+ * 통계 페이지
+ */
+app.get('/stats', (c) => {
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>통계 - Should I Buy?</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <link href="/static/style.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </head>
+    <body class="bg-gradient-to-br from-purple-50 to-blue-50 min-h-screen">
+        <div class="container mx-auto px-4 py-8">
+            <!-- 헤더 -->
+            <header class="text-center mb-8">
+                <a href="/" class="inline-flex items-center text-gray-600 hover:text-gray-800 mb-4">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    대시보드로 돌아가기
+                </a>
+                <h1 class="text-4xl font-bold text-gray-800 mb-2">
+                    <i class="fas fa-chart-bar mr-2 text-blue-600"></i>
+                    소비 통계
+                </h1>
+                <p class="text-gray-600">당신의 소비 패턴을 한눈에 확인하세요</p>
+            </header>
+
+            <div id="stats-content">
+                <div class="text-center py-12">
+                    <i class="fas fa-spinner fa-spin text-5xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-500 text-lg">통계를 불러오는 중...</p>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+        <script src="/static/stats.js"></script>
     </body>
     </html>
   `)

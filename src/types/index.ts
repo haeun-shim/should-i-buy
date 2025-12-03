@@ -46,3 +46,35 @@ export interface ApiResponse<T> {
   data?: T;
   error?: string;
 }
+
+// 통계 데이터 타입
+export interface Statistics {
+  summary: {
+    total_decisions: number;
+    purchased: number; // 구매 OK
+    pending: number; // 48시간 보류
+    rejected: number; // 구매 비추천
+    total_amount: number; // 전체 금액
+    saved_amount: number; // 절약한 금액
+  };
+  by_category: {
+    category: string;
+    count: number;
+    total_amount: number;
+    avg_score: number;
+  }[];
+  by_month: {
+    month: string;
+    count: number;
+    purchased: number;
+    pending: number;
+    rejected: number;
+    total_amount: number;
+    saved_amount: number;
+  }[];
+  recent_trends: {
+    last_7_days: number;
+    last_30_days: number;
+    avg_decision_time: number; // 평균 판단 소요 시간 (초)
+  };
+}

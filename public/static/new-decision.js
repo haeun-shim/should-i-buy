@@ -183,8 +183,22 @@ async function handleSubmit(event) {
     const response = await axios.post('/api/decisions', formData)
 
     if (response.data.success) {
+      const decision = response.data.data
+      
+      // 48시간 보류인 경우 알림 설정
+      if (decision.conclusion === '48시간 보류' && typeof window.savePendingReminder === 'function') {
+        window.savePendingReminder(decision)
+        
+        // 알림 권한이 없으면 요청
+        if (Notification && Notification.permission === 'default') {
+          setTimeout(() => {
+            window.showNotificationPermissionPrompt()
+          }, 1000)
+        }
+      }
+      
       // 결과 페이지로 이동
-      window.location.href = `/result/${response.data.data.id}`
+      window.location.href = `/result/${decision.id}`
     } else {
       alert('오류: ' + response.data.error)
       submitButton.disabled = false
