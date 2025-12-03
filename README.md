@@ -17,7 +17,7 @@
 
 ## 🌐 URLs
 
-- **Production**: https://6b3c27d3.should-i-buy.pages.dev (최신)
+- **Production**: https://ac03bfb1.should-i-buy.pages.dev (최신 - Phase 1-3 포함)
 - **GitHub**: https://github.com/haeun-shim/should-i-buy
 - **샌드박스 테스트**: https://3000-isq73layem4w7421edtqz-2b54fc91.sandbox.novita.ai
 
