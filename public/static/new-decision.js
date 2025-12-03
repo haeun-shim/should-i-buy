@@ -7,6 +7,7 @@ const QUESTIONS = [
     id: 'q1_necessity',
     type: 'slider',
     question: 'Q1. 이 물건이 없으면 일상에 얼마나 불편해?',
+    subtext: '직감으로 찍어도 괜찮아요.',
     min: 0,
     max: 5,
     labels: ['거의 상관없음', '조금 불편', '보통', '꽤 불편', '매우 불편', '필수적']
@@ -15,12 +16,14 @@ const QUESTIONS = [
     id: 'q2_has_similar',
     type: 'toggle',
     question: 'Q2. 비슷한 기능 하는 물건 이미 갖고 있어?',
+    subtext: '집에 굴러다니는 것도 포함해요.',
     options: ['예', '아니오']
   },
   {
     id: 'q3_future_use',
     type: 'slider',
     question: 'Q3. 3개월 뒤에도 최소 주 1회 이상 쓸 것 같아?',
+    subtext: '직감으로 찍어도 괜찮아요.',
     min: 0,
     max: 5,
     labels: ['거의 안 쓸듯', '월 1회', '월 2-3회', '주 1회', '주 2-3회', '거의 매일']
@@ -29,6 +32,7 @@ const QUESTIONS = [
     id: 'q4_budget_burden',
     type: 'slider',
     question: 'Q4. 이 금액이 이번 달 내 수입 대비 얼마나 부담돼?',
+    subtext: '솔직하게 답해야 정확해요.',
     min: 0,
     max: 5,
     labels: ['부담없음', '조금 부담', '보통', '꽤 부담', '매우 부담', '감당 불가']
@@ -37,24 +41,28 @@ const QUESTIONS = [
     id: 'q5_emotional_state',
     type: 'radio',
     question: 'Q5. 지금 내 상태는?',
+    subtext: '감정이 소비에 영향을 줄 수 있어요.',
     options: ['평온', '스트레스', '우울', '텐션 업']
   },
   {
     id: 'q6_purchase_trigger',
     type: 'radio',
     question: 'Q6. 이걸 사려는 계기?',
+    subtext: '정직하게 체크해보세요.',
     options: ['실제 필요', '지인 추천', '광고·SNS 보고', '그냥 눈에 띄어서']
   },
   {
     id: 'q7_can_wait',
     type: 'toggle',
     question: 'Q7. 1~2주 뒤에 사도 상관없지?',
+    subtext: '급한 게 아니면 시간을 두고 생각해요.',
     options: ['예', '아니오']
   },
   {
     id: 'q8_maintenance_cost',
     type: 'radio',
     question: 'Q8. 추가 유지비/구독료/소모품 들어가는 물건이야?',
+    subtext: '숨은 비용이 있을 수 있어요.',
     options: ['예', '아니오', '잘 모르겠음']
   }
 ]
@@ -66,6 +74,7 @@ function renderSlider(question) {
   return `
     <div class="space-y-2">
       <label class="block text-gray-700 font-medium">${question.question}</label>
+      ${question.subtext ? `<p class="text-sm text-gray-500 italic">${question.subtext}</p>` : ''}
       <div class="flex items-center space-x-4">
         <span class="text-sm text-gray-500 w-20">0</span>
         <input type="range" id="${question.id}" 
@@ -88,6 +97,7 @@ function renderToggle(question) {
   return `
     <div class="space-y-2">
       <label class="block text-gray-700 font-medium">${question.question}</label>
+      ${question.subtext ? `<p class="text-sm text-gray-500 italic">${question.subtext}</p>` : ''}
       <div class="flex space-x-4">
         ${question.options.map(option => `
           <label class="flex-1 cursor-pointer">
@@ -107,6 +117,7 @@ function renderRadio(question) {
   return `
     <div class="space-y-2">
       <label class="block text-gray-700 font-medium">${question.question}</label>
+      ${question.subtext ? `<p class="text-sm text-gray-500 italic">${question.subtext}</p>` : ''}
       <div class="grid grid-cols-2 gap-3">
         ${question.options.map(option => `
           <label class="cursor-pointer">

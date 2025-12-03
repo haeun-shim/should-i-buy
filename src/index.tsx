@@ -295,7 +295,7 @@ app.get('/', (c) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Should I Buy? - 살까말까 판단기</title>
+        <title>마법의 소라고동 - 살까말까 판단기</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/style.css" rel="stylesheet">
@@ -305,10 +305,10 @@ app.get('/', (c) => {
             <!-- 헤더 -->
             <header class="text-center mb-8">
                 <h1 class="text-4xl font-bold text-gray-800 mb-2">
-                    <i class="fas fa-shopping-cart mr-2 text-purple-600"></i>
-                    Should I Buy?
+                    <i class="fas fa-magic mr-2 text-purple-600"></i>
+                    마법의 소라고동
                 </h1>
-                <p class="text-gray-600">10초 안에 결론 내주는 소비 판단기</p>
+                <p class="text-gray-600">살까말까 3초 고민되면, 한 번만 눌러보세요.</p>
             </header>
 
             <!-- 버튼들 -->
@@ -356,7 +356,7 @@ app.get('/new', (c) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>새 소비 판단 - Should I Buy?</title>
+        <title>새 소비 판단 - 마법의 소라고동</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/style.css" rel="stylesheet">
@@ -455,7 +455,7 @@ app.get('/result/:id', (c) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>판단 결과 - Should I Buy?</title>
+        <title>판단 결과 - 마법의 소라고동</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/style.css" rel="stylesheet">
@@ -488,7 +488,7 @@ app.get('/stats', (c) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>통계 - Should I Buy?</title>
+        <title>통계 - 마법의 소라고동</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
         <link href="/static/style.css" rel="stylesheet">
