@@ -10,7 +10,7 @@
     {
       "binding": "DB",
       "database_name": "webapp-production",
-      "database_id": "local-database-id-placeholder"
+      "database_id": "1ec0fdc2-4976-4eda-8dc9-8ee8e0ec6785"
     }
   ]
 }
