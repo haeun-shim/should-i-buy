@@ -17,9 +17,9 @@
 
 ## 🌐 URLs
 
+- **Production**: https://b62cdcb1.should-i-buy.pages.dev
+- **GitHub**: https://github.com/haeun-shim/should-i-buy
 - **샌드박스 테스트**: https://3000-isq73layem4w7421edtqz-2b54fc91.sandbox.novita.ai
-- **Production** (배포 후 업데이트 예정): TBD
-- **GitHub** (저장소 생성 후 업데이트 예정): TBD
 
 ## 🎯 완료된 기능
 
